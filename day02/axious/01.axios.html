@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.min.js"></script>
+</head>
+
+<body>
+    <button id="btn1">GET</button>
+    <button id="btn2">POST</button>
+    <button id="btn3">PATCH</button>
+    <button id="btn4">PUT</button>
+    <button id="btn5">DELTE</button>
+    <script>
+        btn1.onclick = function () {
+            axios.get("http://localhost:3000/comments")
+                .then((res) => {
+                    console.log(res.data);
+                })
+        }
+        btn2.onclick = function () {
+            axios({
+                method: "POST",  //POST添加
+                url: "http://localhost:3000/comments", //给阿comments添加一条数据
+                data: {                               //添加的数据写在data中
+                    body: "axios手册",
+                    postId: 2
+                }
+            })
+        }
+
+        btn3.onclick=function(){
+            axios.patch(
+                'http://localhost:3000/posts/1',
+                {
+                    title:"合格的养猪人"
+                }
+            ).then((res)=>{
+                console.log(res.data);
+            })
+        }
+
+
+        btn5.onclick = function () {
+            axios({
+                method: "DELETE",
+                url: "http://localhost:3000/comments/7",
+            })
+                .then((res) => {
+                    console.log(res);
+                })
+                .catch((rej) => {
+                    console.log(rej);
+                })
+        }
+
+    </script>
+
+</body>
+
+</html>

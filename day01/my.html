@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="./03MyPromise.js"></script>
+    <script>
+        /* const promise = new MyPromise((resolve, reject) => {
+            // resolve(111)
+            reject(111)
+            // throw 123
+        })
+        // console.log(promise);
+        promise.then(
+            (res) => {
+                console.log("成功1", res);
+            },
+            (rej) => {
+                console.log("失败1", rej);
+                return new MyPromise((resolve, reject) => {
+                    reject(333)
+                })
+            }
+        )
+            .catch(
+                (rej) => {
+                    console.log('catch', rej);
+                    return 2222
+                }
+            )
+            .then(
+                (res) => {
+                    console.log("成功2", res);
+                    return 3333
+                },
+                (rej) => {
+                    console.log("失败2", rej);
+                    return 3333
+                }
+            )
+            .then(
+                (res) => {
+                    console.log("成功3", res);
+                },
+                (rej) => {
+                    console.log("失败3", rej);
+                }
+            )
+
+        //测试MyPromise.all方法
+        const a = new MyPromise((resolve, reject) => {
+            resolve('aaa')
+        })
+        const b = new MyPromise((resolve, reject) => {
+            resolve('bbb')
+        })
+
+        MyPromise.all([a, b, 1, {}, 1]).then(res => {
+            console.log('sucess', res);
+        }).catch(rej => {
+            console.log('err', rej);
+        })
+
+
+
+        MyPromise.allSetteld([a, b, 1, {}, 1]).then(res => {
+            console.log('sucess', res);
+        }).catch(rej => {
+            console.log('err', rej);
+        }) */
+
+
+
+        const h2 = MyPromise.resolve;
+        const h3 = MyPromise.reject(111);
+       
+        console.log(h2,h3)
+
+
+
+
+
+    </script>
+</body>
+
+</html>

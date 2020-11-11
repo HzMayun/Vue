@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button id="btn1">按钮1</button>
+    <button id="btn2">按钮2</button>
+    <script>
+        btn1.onclick = function () {
+            //1、创建xhr对象
+            const xhr = new XMLHttpRequest()
+
+            // 2、绑定onreadystatechange事件
+            xhr.onreadystatechange = function(){
+                // console.log(xhr.readyState);
+                if(xhr.readyState===4&&xhr.status >=200&&xhr.status <=299){
+                    console.log(JSON.parse(xhr.responseText));
+                    console.log(xhr);
+                    console.log(xhr.response);
+                }
+            }
+            // 3、设置请求信息（请求地址，方法等）
+            xhr.open("GET","http://localhost:3000/posts")
+            // 4、发送请求
+            xhr.send()
+        }
+    </script>
+</body>
+
+</html>

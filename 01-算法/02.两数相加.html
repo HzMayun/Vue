@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    /* 
+      给定 nums = [2, 7, 11, 15], target = 9
+      因为 nums[0] + nums[1] = 2 + 7 = 9
+      所以返回 [0, 1]
+    */
+
+    /*   const sum = function (nums, target) {
+        const newNum = [];
+        for (let i = 0; i < nums.length; i++) {
+          for (let j = 0; j < nums.length; j++) {
+            if (nums[i] + nums[j] === target) {
+              newNum.push(i, j)
+            }
+          }
+        }
+        const str = [...new Set(newNum)]  //去重
+        console.log(str);
+      }
+      sum([7, 3, 2, 15],9) */
+
+    //当数组中有多个元素 相加等于
+
+    const sum = function (nums, target) {
+      const str = []
+
+      for (let i = 0; i < nums.length; i++) {
+        for (let j = 0; j < nums.length; j++) {
+          const newNum = [];
+          if (nums[i] + nums[j] === target) {
+            newNum.push(i, j)
+            newNum.sort()
+            // console.log("newNum是 ",newNum);
+
+            // console.log(str.includes(newNum));
+
+
+            str.push(newNum)
+            // str.push(i, j)
+            // console.log("str 是 ",str);
+
+
+          }
+        }
+      }
+      console.log(str);
+      return str
+
+
+
+    }
+    sum([7, 32, 2, 2, 23, 12, 4, 2, 15], 9)
+    // console.log(sum);
+
+  
+    var removeRepeat = function (arr) {
+      var obj = {};
+      for (var i = 0; i < arr.length; i++) {
+        // 判断当前项是否遍历过，是则删除，否存入obj以作对照
+        if (obj.hasOwnProperty(arr[i])) {
+          arr.splice(i, 1)
+          i++;
+        }
+        obj[arr[i]] = i;
+      }
+      console.log(arr);
+      return arr;
+    }
+    removeRepeat([[0,2],[0,3],[0,7],[0,2],[0,3],[0,7]]); 
+
+
+  </script>
+</body>
+
+</html>

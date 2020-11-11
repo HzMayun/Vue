@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="./MyPromise.js"></script>
+    <script>
+        const promise = new MyPromise((resolve, reject) => {
+            resolve(111);
+            // reject(111);
+        })   
+        promise
+            .catch(
+                (rej) => {
+                    console.log('catch失败', rej);
+                    return 'catch'
+                }
+            )
+            .then(
+                (res) => {
+                    console.log('222成功', res);
+                    throw 'throw'
+                },
+                (rej) => {
+                    console.log('222失败', rej);
+                    return new MyPromise((resolve, reject) => {
+                        reject(333)
+                    })
+                }
+            )
+            .then(
+                (res) => {
+                    console.log('222成功', res);
+
+                },
+                (rej) => {
+                    console.log('222失败', rej);
+                    return new MyPromise((resolve, reject) => {
+                        reject(333)
+                    })
+                }
+            )
+
+
+    </script>
+</body>
+
+</html>
