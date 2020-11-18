@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.min.js"></script>
+</head>
+
+<body>
+    <button id="btn1">发送请求</button>
+    <button id="btn2">取消请求</button>
+    <script>
+        //方法一 ：
+        /* let cancel = null
+        btn1.onclick = function () {
+            axios({
+                url: "http://localhost:3000/comments",
+                cancelToken: new axios.CancelToken(function (c) {
+                    cancel = c;
+                }),
+            })
+                .then((res) => {
+                    console.log(res.data);
+                })
+                .catch((reason) => {
+                    console.log("reason", reason);
+                });
+        }
+        btn2.onclick = function () {
+            cancel ("取消请求了");
+        } */
+
+        //方法二：
+        const CancelToken = axios.CancelToken
+        const source = CancelToken.source()
+        btn1.onclick = function () {
+            axios({
+                url: "http://localhost:3000/comments",
+                cancelToken: source.token,
+            })
+                .then((value) => {
+                    console.log("value", value);
+                })
+                .catch((reason) => {
+                    console.log("reason", reason);
+                });
+        }
+
+        btn2.onclick = function () {
+            source.cancel("取消请求了")
+            console.log(11);
+        }   
+    </script>
+</body>
+
+</html>

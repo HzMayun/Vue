@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <h1>组件 ：！！！</h1>
+
+        <test-compnent></test-compnent>
+    </div>
+    <script type="text/javascript" src="../js/vue.js"></script>
+    <script type="text/javascript">
+    //定义组件 
+    const TestComponent = Vue.extend({
+        //组件的配置对象
+        data(){
+            return {
+                num:0
+            }
+        },
+        methods:{
+            handleclick(){
+                this.num ++
+            }
+        },
+        //组件要渲染到页面的内容
+        template:"<div> <p>{{num}}   <button @click='handleclick'>num+1</button>  </p> </div>"
+    })
+    new Vue({
+        el:"#app",
+        //注册组件
+        components:{
+            "test-compnent":TestComponent,
+        }
+        
+    })
+    </script>
+</body>
+</html>

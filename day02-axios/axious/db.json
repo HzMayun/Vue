@@ -1,0 +1,54 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "合格的养猪人",
+      "author": "typicode"
+    },
+    {
+      "id": 2,
+      "title": "react",
+      "author": "呸"
+    },
+    {
+      "id": 3,
+      "title": "哈哈哈",
+      "author": "小明"
+    },
+    {
+      "id": 4,
+      "title": "养猪手册",
+      "author": "胡周"
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    },
+    {
+      "id": 2,
+      "body": "react知识点，学会+2000",
+      "postId": 2
+    },
+    {
+      "id": 3,
+      "body": "笑呀笑呀",
+      "postId": 3
+    },
+    {
+      "id": 4,
+      "body": "如何科学的圈养郭子明",
+      "postId": 4
+    },
+    {
+      "body": "养猪手册",
+      "postId": "4",
+      "id": 5
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  }
+}

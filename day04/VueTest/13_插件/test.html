@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>17_插件</title>
+</head>
+
+<body>
+  <script src="https://cdn.bootcdn.net/ajax/libs/dayjs/1.9.4/dayjs.min.js"></script>
+  <script type="text/javascript" src="../js/vue.js"></script>
+  <!-- 引入自定义插件  -->
+  <script src="./MyPlugins.js"></script>
+
+  <div id="app">
+    <h3>{{ time|formatDate('YYYY-MM-DD',123) }}
+      {{time|formatDate('HH:mm:ss')}}</h3>
+  </div>
+  <script type="text/javascript">
+    //使用Vue插件==>调用插件函数，传入Vue ,要在定义new Vue之前
+    Vue.use(MyPlugins)
+
+    new Vue({
+      el: "#app",
+      data: {
+        time: Date.now(),
+        msg: "HELLO,hello"
+      },
+      mounted() {
+        Vue.globalMethod() //全局方法
+        this.$instanceMethod()  //实例对象上的方法
+      }
+    })
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>06_列表渲染_过滤与排序</title>
+</head>
+
+<body>
+  <div id='demo'>
+    <input type="text" placeholder="请输入要查找的姓名" v-model="newUserText">
+    <li v-for="item in newUser" :key="item.id">
+      {{item.id}}-{{item.name}}-{{item.age}}-{{item.sex}}
+    </li><br>
+    <button @click = "sort(1)">年龄升序</button>
+    <button @click = "sort(-1)">年龄降序</button>
+    <button @click = "sort(0)">初始顺序</button>
+  </div>
+  <script type="text/javascript" src="../js/vue.js"></script>
+  <script type="text/javascript">
+    new Vue({
+      el: "#demo",
+      data: {
+        user: [
+          { id: 1, name: "jock", age: 12, sex: "男" },
+          { id: 2, name: "wang", age: 34, sex: "男" },
+          { id: 3, name: "lily", age: 22, sex: "男" },
+          { id: 4, name: "lucy", age: 32, sex: "男" },
+          { id: 5, name: "mark", age: 25, sex: "男" },
+          { id: 6, name: "jarry", age: 65, sex: "男" },
+          { id: 7, name: "marry", age: 75, sex: "男" },
+          { id: 8, name: "wangjia", age: 56, sex: "男" },
+          { id: 9, name: "jdon", age: 89, sex: "男" },
+        ],
+        newUserText: ''
+      },
+
+      computed: {
+        newUser() {
+          //先过滤
+          const filterUser = this.user.filter((user) => {
+            console.log();
+            return user.name.includes(this.newUserText)
+          })
+          //
+          if()
+          return filterUser
+        }
+
+
+      }
+
+
+
+    })
+  </script>
+</body>
+
+</html>

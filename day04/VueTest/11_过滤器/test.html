@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>11_过滤器</title>
+</head>
+
+<body>
+  <!--
+1. 理解过滤器
+  功能: 对要显示的数据进行特定格式化后再显示
+  注意: 并没有改变原本的数据, 可是产生新的对应的数据
+2. 编码
+  1). 定义过滤器
+    Vue.filter(filterName, function(value[,arg1,arg2,...]){
+      // 进行一定的数据处理
+      return newValue
+    })
+  2). 使用过滤器
+    <div>{{myData | filterName}}</div>
+    <div>{{myData | filterName(arg)}}</div>
+-->
+  <!--需求: 对当前时间进行指定格式显示-->
+  <script src="https://cdn.bootcdn.net/ajax/libs/dayjs/1.9.4/dayjs.min.js"></script>
+  <script type="text/javascript" src="../js/vue.js"></script>
+  <div id="app">
+    <h2>显示格式化之后的当前时间:</h2>
+    <h3>{{ time|forTime01('YYYY-MM-DD',123) }} 
+      {{time|forTime('HH:mm:ss')}}
+    </h3>
+    <button @click="$destroy()">停止计时</button>
+  </div>
+  <script>
+    //定义一个全局可用过滤器 
+    Vue.filter("forTime",(value,str)=>{
+      return dayjs(value).format(str)
+    })
+    new Vue({
+      el:"#app",
+      data:{
+        time:Date.now()
+      },
+      filters:{
+        forTime01(value,str,a){
+          return dayjs(value).format(str)
+        }
+      },
+      mounted(){
+      
+        this.timer=setInterval(()=>{
+          this.time = Date.now()
+          console.log(1);
+        },1000)
+      },
+      beforeDestroy(){
+        clearInterval(this.timer)
+      }
+
+    })
+  </script>
+</body>
+
+</html>

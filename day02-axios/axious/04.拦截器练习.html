@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拦截器</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.min.js"></script>
+
+</head>
+<body>
+    <script>
+        const instance = axios.create({
+            baseURL:"http://localhost:3000"
+        })
+
+        //发送请求拦截器
+        instance.interceptors.request.use(
+            (config)=>{
+                console.log("request success 111");
+                return config
+            },
+            (error)=>{
+                console.log("request error 111");
+                return error
+            }
+        )
+        //响应请求拦截器
+        instance.interceptors.response.use(
+            (config)=>{
+                console.log("response success 222");
+                return config
+            },
+            (error)=>{
+                console.log("response error 222");
+                return error
+            }
+        )
+
+        instance({
+            url:'http://localhost:3000/comments',
+        })
+        .then(()=>{
+            console.log("then 333");
+            console.log();
+        })
+        .catch(()=>{
+            console.log("err 333");
+        })
+        instance({
+            
+        })
+    </script>
+</body>
+</html>

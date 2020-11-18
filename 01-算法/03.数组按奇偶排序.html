@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        //偶数下标放偶数，奇数下标放奇数
+        //数组的奇数和偶数个数相等
+        var sortArrayByParityII = function (A) {
+            const str = []
+            var j = 0
+            var k = 1
+            A.forEach((item) => {
+                if (item % 2 === 0) {
+                    str[j] = item
+                    j += 2
+                } else {
+                    str[k] = item
+                    k += 2
+                }
+            })
+            return str
+        };
+        sortArrayByParityII([4, 2, 5, 7])
+    </script>
+</body>
+
+</html>

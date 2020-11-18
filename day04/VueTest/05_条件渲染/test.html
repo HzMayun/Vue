@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>08_条件渲染</title>
+</head>
+
+<body>
+  <!--
+      1. 条件渲染指令
+        v-if
+        v-else
+        v-show
+      2. 比较v-if与v-show
+      v-if:直接删除了DOM元素，将
+      v-show：是通过样式display :none 来实现的 
+        如果需要频繁切换 v-show 较好
+      -->
+
+  <div id="app">
+    <h1 v-if="isShow">v-if的切换</h1>
+    <h1 v-else="isShow">v-else</h1>
+
+    <h1 v-show = "isShow">v-show的切换</h1>
+    <button @click = "handleClick">点击</button>
+  </div>
+
+  <script type="text/javascript" src="../js/vue.js"></script>
+  <script type="text/javascript">
+    new Vue({
+      el: "#app",
+      data: {
+        isShow: true
+      },
+      methods: {
+        handleClick(){
+          this.isShow = !this.isShow
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
