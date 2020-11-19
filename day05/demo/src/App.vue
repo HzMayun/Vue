@@ -2,7 +2,6 @@
   <div id="app">
     <h1>App组件</h1>
     <p>{{ num }}</p>
-    <button>App</button>
     <Child ref="child"></Child>
   </div>
 </template>
@@ -21,7 +20,8 @@ export default {
     Child,
   },
   mounted() {
-    this.$refs.child.$on("add", this.add);
+    this.$refs.child.$on("add", this.add); //绑定事件
+    console.log("on事件", this.$on);
   },
   methods: {
     add() {

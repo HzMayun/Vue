@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>Child 组件</h2>
-    <button @click="handleClick">按钮</button>
+    <button @click="$emit('add')">按钮</button>
   </div>
 </template>
 

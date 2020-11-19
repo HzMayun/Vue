@@ -1,6 +1,5 @@
 <template>
   <li @mouseenter="isShow = true" @mouseleave="isShow = false" id="task.id">
-    <!-- <TodoDel v-for="task in tasks" :key="task.id" :task="task"></TodoDel> -->
     <label for="task.id">
       <input type="checkbox" v-model="task.checked" id="task.id" />
       <input type="checkbox" v-model="task.checked" id="task.id" />
@@ -18,7 +17,6 @@ export default {
   data() {
     return {
       isShow: false,
-      checkedNames: [],
     };
   },
   props: {
