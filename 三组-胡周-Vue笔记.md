@@ -1,4 +1,6 @@
-### 第一章、Vue基础知识
+### 
+
+### 第一章：vue基础
 
 ####一、Vue基本认识
 
@@ -492,7 +494,7 @@ export defalut = MyPlugins
 
 
 
-#### 四、响应式、component
+#### 四、响应式、组件
 
 ##### 1、响应式 ：
 
@@ -564,14 +566,18 @@ Vue.component("test-compnent", {
 
 ##### 1、mian.js文件
 
-```
+```js
 import  Vue from "vue" 
-import App from 
+import App from './App.vue'
+
+new Vue({
+	render (h)=>h(App)
+}).$mount('#app')
 ```
 
-#### 二、组件间的通讯
+### 第二章、组件间的通讯
 
-##### 1、props
+#### 一、props
 
 ​	①、props用于父子组件之间的通讯（传递动态数据），如果要实现子=>父之间的通讯，需使用在父组件中定义函数，子组件调用的方式 
 
@@ -637,7 +643,7 @@ methods：{
 
 ​	④、props传输数据的时候，如果没有声明接收，在子组件的 **this.$attrs** 也一样可以接收到
 
-##### 2、render方法
+#### 二、render方法
 
 ​	render方法中的createElment具备模板能力，
 
@@ -652,9 +658,9 @@ new Vue({
 }).$mount("#app");
 ```
 
-##### 3、自定义事件
+#### 三、自定义事件
 
-###### ①、自定义事件
+##### ①、自定义事件
 
 ```js
 <Child @add="add" />   //绑定自定义事件     add:函数名， 后面的add是函数体，要定义在父组件中
@@ -669,11 +675,11 @@ this.$emit('add')
 
 ​	子组件的**this._event**是存储事件容器。（私有属性）
 
-###### ②、ref绑定自定义事件
+##### ②、ref绑定自定义事件
 
 ```js
 //父组件：
-<Child ref="child"></Child>
+<Child ref="child"></Child> //定义自定义事件（child是Child组件的实例化对象）
 mounted(){ //发请求，绑定自定义事件一般都在mounted中定义
     //通过ref定义，通过$refs接收 $on 触发
     this.$refs.child.$on('add',this.add) //绑定自定义事件   
@@ -689,6 +695,10 @@ methods: {
       this.$emit("add");
     },
   },
+
+//也可以给自己绑定事件 ，但是没有意义，自己可以指直接操作数据了
+this.$on("add", this.add); //绑定事件
+<button @click="$emit('add')"></button>  //触发事件
 ```
 
 ​	ref如果设置给普通元素，获取到的就是这个真是元素，如果设置给组件，获取到的就是组件实例对象。
@@ -700,5 +710,856 @@ methods: {
 - $off  ( eventNmae,listener ) : 解绑事件
 - $emit  ( eventNmae,data ) : 触发自定义事件
 
-​	
+##### 	③、全局事件总线
+
+​			Vue中，组件的原型对象的__proto__ 是指向了Vue的原型对象，所以给vue的原型对象绑定事件，vue的实例也可以访问到事件，其他组件的实例也可以访问到事件，从而达到任意组件之间的通讯
+
+![全局事件总线](I:\学习记录\胡周笔记代码练习\md文档笔记图\全局事件总线.png)
+
+使用方式有两种 “ 
+
+​	`Vue.prototype.$bus=new Vue()`
+
+`beforeCreate(){Vue.prototype.$bus = this}`
+
+##### ④、手写全局事件
+
+```js
+class EventEmmiter {
+    constructor() {
+        this._events = {
+            //  eventName : [listener1,listener2....]
+        }
+    }
+    //1、绑定事件
+    on(eventName, listener) {
+        if (this._events[eventName]) {
+            this._events[eventName].push(listener)
+        } else {
+            this._events[eventName] = [listener]
+        }
+    }
+    //2、触发事件
+    emit(eventName, ...data) {
+        if (!this._events[eventName]) {  //如果里面有没有回调函数，直接返回
+            return
+        }
+        //依次调用eventName数组里面的回调函数（可能有多个回调函数， ...data  将数组展开赋值） 
+        this._events[eventName].forEach(listener => listener(...data));
+    }
+    //3、解绑事件
+    off(eventName, listener) {
+        if (!this._events[eventName]) {
+            return
+        }
+        if (listener) { //传入了回调函数
+            this._events[eventName] = this._events[eventName].filter(
+                (lis) => lis !== listener
+            );
+        } else {   //如果没有传入，则将所有的回到函数全部解绑
+            this._events[eventName] = null
+        }
+    }
+    //4、绑定一次性事件
+    once(eventName, listener) {
+        const lis = (...data) => {
+            this.off(eventName, lis) // 解绑事件
+            listener(...data)  // 触发事件回调函数
+        }
+        this.on(eventName, lis)
+    }
+}
+
+```
+
+
+
+#### 四、插槽：
+
+​	传数据也传标签 （父组件给子组件传标签）
+
+##### 1、默认插槽
+
+​			父组件写成双标签，里面放入标签数据，那么这个标签数据就会以插槽的方式传递给子组件，data数据也一样，直接插值表达式传过去，都使用slot标签就可以全部接收到 
+
+```js
+//父组件APP ：
+<div>
+    <h3>APP组件</h3>
+    <Child>
+   		<h1>{{ title }}</h1>
+        <p>hello ,heoolo</p>
+        <p>hello ,heoolo</p>
+        <p>hello ,heoolo</p>
+    </Child>
+  </div>
+
+//子组件Child ：
+<div>
+    <h3>Child组件</h3>
+    <slot></slot>   //使用父组件，以插槽的形式 
+  </div>
+```
+
+##### 2、具名插槽 /命名插槽
+
+​		给每一个插槽取一个名字 ：3中取名语法    slot="header" 、v-slot:body、 #footer
+
+​		具名插槽形式，必须要slot要加name才可以渲染
+
+```js
+<BChild>
+    //用 <template>标签包起来，里面加上slot属性，值就是名字
+    <template slot="header">
+            <header>App=>BChild=>hearder</header>
+    </template>
+
+    <!-- 新语法 -->
+    <template v-slot:body>
+        <body>App=>BChild=>body</body>
+    </template>
+
+    <!-- 新语法简写 -->
+    <template #footer>
+        <footer>App=>BChild=>footer</footer>
+    </template>
+
+</BChild>
+
+//子组件接受的时候：就会渲染出对应的内容
+<slot name="header"></slot>
+ <slot name="body"></slot>
+ <slot name="footer"></slot>
+```
+
+##### 3、作用域插槽(子传父)
+
+子组件可以通过在slot上传递props的方式，将数据传递给父组件
+
+```js
+//子组件 ：
+<template>
+  <div>
+    <h3>CChild组件</h3>
+    <!-- 以标签属性的方式(props)传递给父组件 -->
+    <!-- 父组件就可接收到  -->
+    <slot name="list" :person="person"></slot>
+  </div>
+</template>
+//子组件定义的数据 ： 
+data() {
+    return {
+      person: {
+        name: "王二蛋",
+        age: 18,
+      },
+    };
+  },
+      
+//App父组件 ：
+  <CChild>
+  <!-- 旧语法方式 ： 取个名字 -->
+  <template #list="slotperson">    //这里接受的就是person整个对象，下面再处理一下 就可达到显示效果
+    <ul>
+      <li>姓名：{{ slotperson.person.name }}</li>
+      <li>年龄：{{ slotperson.person.age }}</li>
+    </ul>
+  </template>
+//结构赋值一下
+  	#list={person}
+	<li>姓名：{{person.name }}</li>
+	<li>姓名：{{person.age }}</li>
+//还可以结构赋值一下：
+	#list={person：{name,age}}
+	<li>姓名：{{name}}</li>
+	<li>姓名：{{age}}</li>
+
+</CChild>
+```
+
+
+
+#### **五、todo-list练习**
+
+![demo2_todo list (2)](I:\学习记录\胡周笔记代码练习\md文档笔记图\demo2_todo list (2).gif)
+
+##### 1、拆分组件
+
+​	①、头部组件 header 具有添加功能
+
+​	②、Item	
+
+​	③、List组件 =>del功能
+
+​	④、Footer组件  计算任务 、一键删除已完成任务等。。
+
+##### 2、结构
+
+```js
+vue create todolist-02      //终端创建项目 把前面用的package.json复制一下 （配置好了的）
+创建views文件夹，放入自己的定义的组件（最好以文件夹=>index.vue的形式）项目结构如下
+
+```
+
+<img src="I:\学习记录\胡周笔记代码练习\md文档笔记图\todolist项目结构.png" alt="todolist项目结构" style="zoom:25%;" />
+
+**main.js :**
+
+```js
+import Vue from "vue"  //导入vue
+import App from "./App.vue" //导入根组件App
+
+Vue.config.productionTip = false   //生产环境配置为false
+
+new Vue({
+    render:(h)=>h(App),    //render函数(前面有写到)
+}).$mount('#app')
+```
+
+##### 3、静态模板
+
+​	导入html页面和css样式1
+
+​	**①、App.vue**
+
+```js
+//1、嵌套关系
+<div id="root">
+    <div class="todo-container">
+      <div class="todo-wrap">
+        <Header></Header>
+        <Item></Item>
+        <Footer></Footer>
+      </div>
+    </div>
+  </div>
+//2、导入
+import Header from "./views/Header";
+import Item from "./views/Item";
+import Footer from "./views/Footer";
+//3、注册组件
+components: {
+    Header,
+    Item,
+    Footer,
+  },
+```
+
+②、Item里面嵌套了List
+
+```js
+<ul class="todo-main">
+    <List></List>
+  </ul>
+</template>
+```
+
+##### 4、功能实现
+
+###### 	①、数据展示
+
+![C_{5K7Q4K9_8AQIHXE9SZCR](I:\学习记录\胡周笔记代码练习\md文档笔记图\C_{5K7Q4K9_8AQIHXE9SZCR.png)
+
+**在App.vue中定义数据**，因为是公共数据，便于修改，所以整体定义
+
+最终要放到	List组件中去用  job渲染页面，**APP=>Item=>List**
+
+```js
+// 在App.vue中定义数据
+data() {
+    return {
+      tasks: [
+        { id: 1, job: "吃饭" },
+        { id: 2, job: "睡觉" },
+        { id: 3, job: "唱歌" },
+        { id: 4, job: "打游戏" },
+      ],
+    };
+  },
+// APP=>Item
+ <Item :tasks="tasks"></Item>
+//Item接收数据
+   props: {
+       tasks: Array,
+    },
+//循环遍历tasks,将里面的每一条数据都渲染出List页面，key值是tasks里面每一条数据task的id，然后将task传入List组件中
+  <List v-for="task in tasks" :key="task.id" :task="task"></List>     
+//List组件接收后，使用即可
+props: {
+    task: Object,
+ },
+     //使用
+<span>{{ task.job }}</span>   
+```
+
+​		数据展示成功
+
+###### ②、Header组件添加功能实现
+
+- **绑定回车提交事件：v-on:keyup.enter="add"**     当键盘回车键弹起时触发 add（）方法 add用来先tasks里面添加数据
+- **获取用户的输入，绑定双向数据，v-model="addText"** ，addText初始化值设置为“ ”即可，后期在add里面解构赋值
+- **调用add函数，**达到先tasks里面添加数据的功能（add里面调用App里面定义的函数（这个函数才是真正添加任务的方法，通过props传递过来））
+
+```js
+//Header.vue：
+v-on:keyup.enter="add"
+v-model="addText"
+
+addList: Function,   //用props接收函数后再使用
+
+data() {return { addText: "",};},
+add() {
+    //  this.addText 解构赋值，可以通过addText（键名）区自动查找this中的addText
+      const { addText } = this;     
+      this.addList(addText);    //调用addList函数，并把addText传参（子组件向父组件传递参数，通过调用父组件函数的方式）
+    },
+        
+//App.vue定义函数 ：
+addList(addText) {
+      this.tasks.unshift({ id: Date.now(), job: addText });  //在前面加 ，id避免重复
+},
+<Header :addList="addList"></Header>  //函数传出
+```
+
+###### ③、List组件功能实现
+
+​	**1、<input type="checkbox" />实现点击选中**
+
+```js
+//首先在 App data数据中，添加ischeck属性
+{ id: 1, job: "吃饭", isCheck: true },
+//然后给List组件中的input框绑定事件（双向的，因为页面点击，也要修改data中的值）
+<input type="checkbox" v-model="task.isCheck" />   // task.ischeck 
+```
+
+​	补充知识点**v-model**：
+
+`	v-model` 在内部为不同的输入元素使用不同的 property 并抛出不同的事件：
+
+- text 和 textarea 元素使用 `value` property 和 `input` 事件；
+
+- checkbox 和 radio 使用 `checked` property 和 `change` 事件；
+
+- select 字段将 `value` 作为 prop 并将 `change` 作为事件。
+
+  **2、删除功能实现**
+
+  ```js
+  //1、鼠标悬停的时候，删除按钮才会显示
+  <button class="btn btn-danger" v-show="isShow">删除</button>
+  data :{
+  	isShow:false   //初始不显示
+  }
+  //2、给Li绑定鼠标事件
+  <li @mouseenter="isShow = true" @mouseleave="isShow = false">
+      
+  //3、绑定删除事件
+  <button class="btn btn-danger" v-show="isShow" @click="del">删除</button>
+  del(){
+        delList(this.task.id)   //调用App组件中的 DelList（）方法，传入当前List的id
+  } 
+  //4、App定义delList函数，接收传入的id   filter（） true的时候保留 
+  delList(id) {
+        this.tasks = this.tasks.filter((item) => item.id !== id); 
+      },
+  //记得把函数传过去再用
+  ```
+```
+  
+
+###### ④、Footer组件的实现
+
+​		**1、已完成任务 和 全部任务**
+
+​```js
+//1、全部任务就是 tasks数组的length
+<span> <span>已完成0</span> / 全部{{ tasks.length }} </span>
+//2、已完成任务
+//App.vue 中 定义一个计算属性，用来计算{ id: 1, job: "吃饭", isCheck: true }的个数 可读的
+computed: {
+    num: {
+      get() {
+        return this.tasks.filter((item) => item.isCheck === true).length;
+      },
+    },
+  },
+//num就是要显示在已完成后面的数 传入Footer组件使用就可以
+```
+
+​		**2、清除已完成任务**
+
+```js
+//Footer.vue
+<button class="btn btn-danger" @click="delHasChecked">清除已完成任务</button>
+delHasChecked(){
+    this.delChecked();
+}
+//App.vue
+delChecked(){
+    //把带有isCheck: true的数据删除即可
+    this.tasks = this.tasks.filter((item) => item.isCheck !== true);
+}
+
+```
+
+​		**3、全选按钮**
+
+```js
+<input type="checkbox" v-model="checkAllList" :disabled="!tasks.length" />
+//因为全选按钮，可以点击（页面=>js数据），数据也可以控制显示，所以定义一个computed属性
+computed: {
+    checkAllList: {
+      get() {
+        return this.num === this.tasks.length; //访问时触发，就两个值相等的时候，被选中
+      },
+      set(val) { //修改 就是通过点击改变App中data的值
+        //value就是checkAllList的值
+        this.checkList(val);
+      },
+    },
+  },
+ //App.vue :
+  checkList(val) {
+      this.tasks.forEach((item) => {
+        item.isCheck = val;    //让task中的isCheck和val（这里是全选按钮的值）一致就可
+      });
+    },    
+```
+
+##### 5、local Storage缓存
+
+###### ①、watch监视属性
+
+​	关闭浏览器不会触发卸载等生命周期函数。
+
+​	watch 监视属性，只要tasks发生变化，就将tasks存入localStorage中
+
+​		**window.localStorage.setItem("todos", JSON.stringify(newVal));**
+
+​	 **浅度监视**：watch监视属性，默认情况下只监视第一层属性（属性的值）比如： 【{}，{}，{}】只监视第一层	{}，地址值，但是里面对象{}的内容，不监视，导致更新数据的时候，watch监视不到，则不会触发
+
+```js
+ watch: {
+  //浅度监视：只监视一层属性
+ 	tasks(newVal) {
+   	window.localStorage.setItem("todos", JSON.stringify(newVal));
+  },=
+```
+
+​	 **深度监视**：会监视所有属性（对象中对象）用于监视引用类型数据（对象和数组）， 对象中还有对象数据， 数组里面的值是引用类型数据
+
+```js
+watch: {
+    tasks: {
+      handler(newVal) {
+        window.localStorage.setItem("tasks", JSON.stringify(newVal));
+      },
+      deep: true,
+    },
+  },
+```
+
+
+
+###### ②、设置 
+
+**window.localStorage.setItem("todos",newVal)**
+
+```js
+//App.vue:
+watch{
+	todos: {
+      	handler(newVal) {
+        	window.localStorage.setItem("todos", JSON.stringify(newVal));
+      	},
+     	 deep: true,  
+    	},
+}
+```
+
+###### ③、使用 
+
+ **window.localStorage.getItem("tasks")**
+
+可以在mounted中使用（要发送请求就什么的，就要在这个里面，但是这里没有发送请求），但是这里放在data函数中会更好，可以将原有的省略掉
+
+```js
+//初始化的时候，会调用data函数，如果localStorage中没有数据，就是会面的空数组    
+data（）{
+	const tasks = JSON.parse(window.localStorage.getItem("tasks")) || [] 
+	retrun tasks
+}
+```
+
+### 第三章：Vue-ajax
+
+#### 一、**demo3: github users**
+
+​	示例图：
+
+![demo3_user search (4)](I:\学习记录\胡周笔记代码练习\md文档笔记图\demo3_user search (4).gif)
+
+##### 1、项目结构：
+
+![p1](I:\学习记录\胡周笔记代码练习\md文档笔记图\p1.png)
+
+
+
+##### 2、main.js
+
+添加全局事件总线对象:
+
+```js
+import Vue from 'vue';
+import App from './App.vue';
+
+Vue.config.productionTip = false;
+
+new Vue({
+  beforeCreate() {
+    // 添加全局事件总线对象
+    Vue.prototype.$bus = this;
+  },
+  render: (h) => h(App),
+}).$mount('#app');
+```
+
+##### 3、App.vue
+
+引入组件List和Search：
+
+```js
+<template>
+  <div>
+    <Search />
+    <List />
+  </div>
+</template>
+<script>
+import Search from "./views/Search";
+import List from "./views/List";
+
+export default {
+  name: "App",
+  components: {
+    Search,
+    List,
+  },
+};
+</script>
+<style>
+```
+
+##### 4、sever.js服务器搭建
+
+```js
+const express = require("express");
+const app = express();
+app.get("/search/users", (req, res) => {
+  // jsonp cors
+  res.set('Access-Control-Allow-Origin', '*');   // 解决跨域问题
+  res.json({    //响应了很多条数据，在客户端要筛选
+    total_count: 772,
+    incomuplete_reslts: false,
+    items: [
+      {
+        login: "yyx",
+        id: 1514965,
+        node_id: "MDQ6VXNlcjE1MTQ5NjU=",
+        avatar_url: "https://avatars0.githubusercontent.com/u/1514965?v=4",
+        gravatar_id: "",
+        url: "https://api.github.com/users/yyx",
+        html_url: "https://github.com/yyx",
+        followers_url: "https://api.github.com/users/yyx/followers",
+        following_url: "https://api.github.com/users/yyx/following{/other_user}",
+        gists_url: "https://api.github.com/users/yyx/gists{/gist_id}",
+        starred_url: "https://api.github.com/users/yyx/starred{/owner}{/repo}",
+        subscriptions_url: "https://api.github.com/users/yyx/subscriptions",
+        organizations_url: "https://api.github.com/users/yyx/orgs",
+        repos_url: "https://api.github.com/users/yyx/repos",
+        events_url: "https://api.github.com/users/yyx/events{/privacy}",
+        received_events_url: "https://api.github.com/users/yyx/received_events",
+        type: "User",
+        site_admin: false,
+        score: 1
+      },
+    ]
+  });
+});
+app.listen(3000, "localhost", (err) => {
+  if (err) {
+    console.log("err", err);
+    return;
+  }
+  console.log("服务器启动成功");
+});
+```
+
+##### 5、Search.vue
+
+```js
+<template>
+  <section class="jumbotron">
+    <h3 class="jumbotron-heading">Search Github Users</h3>
+    <div>
+      <input
+        type="text"
+        placeholder="enter the name you search"
+        v-model="searchName"
+      />
+      <button @click="search">Search</button>
+    </div>
+  </section>
+</template>
+<script>
+export default {
+  name: "Search",
+  data() {
+    return {
+      searchName: "",
+    };
+  },
+  methods: {
+    search() {
+      const { searchName } = this;
+      if (!searchName) {
+        return;
+      }
+      this.$bus.$emit("search", searchName);   //定义了全局事件 
+    },
+  },
+};
+</script>
+
+<style>
+</style>
+```
+
+##### 6、List.vue
+
+```js
+<template>
+  <div>
+    <h1 v-if="isFirstView">输入用户名搜索</h1>
+    <h1 v-else-if="isLoading">loading...</h1>
+    <div v-else class="row">
+      <div class="card" v-for="user in users" :key="user.id">
+        <a :href="user.url" target="_blank">
+          <img :src="user.img" style="width: 100px" />
+        </a>
+        <p class="card-text">{{ user.login }}</p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from "axios";
+
+export default {
+  name: "List",
+  data() {
+    return {
+      isFirstView: true,
+      isLoading: false,
+      users: [],
+    };
+  },
+  mounted() {
+    this.$bus.$on("search", (searchName) => {
+      //奇幻loading
+      this.isFirstView = false;
+      this.isLoading = true;
+      // 发送请求
+      axios
+        .get(`http://localhost:3000/search/users?q=${searchName}`)
+        .then((res) => {
+          this.isLoading = false;
+          // 开发时：请求回来的数据有很多，只需要其中的部分数据
+          this.users = res.data.items.map((user) => ({
+            login: user.login,
+            url: user.html_url,
+            img: user.avatar_url,
+            id: user.id,
+          }));
+        })
+        .catch((err) => {
+          this.isLoading = false;
+          console.log(err);
+          alert("网络出现故障，请联系管理员~");
+        });
+    });
+  },
+};
+</script>
+<style>
+.card {
+  float: left;
+  width: 33.333%;
+  padding: 0.75rem;
+  margin-bottom: 2rem;
+  border: 1px solid #efefef;
+  text-align: center;
+}
+
+.card > img {
+  margin-bottom: 0.75rem;
+  border-radius: 100px;
+}
+
+.card-text {
+  font-size: 85%;
+}
+</style>
+
+```
+
+### 第四章、vue-router
+
+1、前段路由
+
+​	用来开发单页面应用SPA  ： 、
+
+​	整个应用只有一个完整页面，页面变化都是在这一个页面进行更新的 。
+
+​	点击链接不会刷新整个页面，会局部更新
+
+​	点击链接也不会发送请求吗，会自己写ajax代码 发送请求
+
+2、原理：
+
+​	点击页面不刷新 :给a标签绑定点击事件阻止其默认行为
+
+​	会更新浏览历史（地址）-->调用history.push(path),就可以更新
+
+​	会局部更新，-->内部监听浏览历史的变化history.listen(listener)，一旦发生变化们就会遍历路由的所有配置，看当前路径时候匹配正确，匹配上就加载-->component
+
+3、vue-router提供的组件
+
+​	router-link ：用来路由导航，
+
+​	router-view ：用来显示当前路由组件
+
+4、路由传参方式 
+
+​		params :
+
+​					-路由配置 ：`path:"/xxx/:xxx`  写路径的时候一定要加 **冒号**
+
+​					-路由连接 ： `<router-link to="./xxx123">xxx</router-link>`
+
+​					-子组件接收params参数 ：  `this.$route.params.xxx`
+
+​		query :
+
+​					-路由连接 ： `<router-link to="./xxx？key=value">xxx</router-link>`
+
+​					-子组件接收params参数 ：  `this.$route.query.key`
+
+​		props : 将params参数或query参数以props形式传递各子组件
+
+​					-路由配置 
+
+```js
+props(route){
+    return {
+    ...route.params,
+    ...route.query,
+    }
+}
+//子组件声明接受
+props:["xxx"]
+```
+
+​		命名路由 ： 路由简写
+
+```js
+配置：
+name :"xxx"
+连接 ： <router-link :to="{name:'xxx',params:{yyy},query:{zzz}.....}">xxx</router-link>
+
+```
+
+​		公共参数 :统一给同济路由传递公共参数
+
+```js
+<router-view ：key="value">xxx</router-link>
+//子组件接受声明：
+props:["key"]
+//使用
+this.key
+```
+
+
+
+### 第五章、Vue响应式原理分析
+
+#### 一、prepare
+
+##### 	1、`[].slice.call(lis)`
+
+​			**将伪数组转换成真数组**
+
+###### 			①伪数组：具有数组的一些函数，单数不包含全部（arguments、获取元素dcumentQuerySelectALL("li") ）
+
+###### 			②、slice（）函数	
+
+​				不传参数的时候，代表选中全部的,`[].slice.call(lis)`将slice的this指向lis（伪数组），然后截取全部，添加到【】中，就得到了一个真数组
+
+```js
+/* 
+      slice方法怎么知道要截取的的是哪个数组？
+      方法内部是通过this来决定哪个数组的
+      console.log([1, 2, 3].slice());
+
+      slice方法的this改成了lis
+      slice方法就会截取lis
+*/
+    const lis = document.querySelectorAll("li")
+    console.log(lis); // NodeList(3) [li, li, li] 伪数组，没有全部的数组方法 
+    const lis02 = [].slice.call(lis)
+    //变种语法：
+    console.log(Array.prototype.slice.call(lis));
+    console.log(lis02);//(3) [li, li, li] 真数组
+```
+
+
+
+##### 	2、node.nodeType 
+
+​			得到类型节点。1 ：代表元素节点，3：代表文本节点
+
+```js
+console.dir(lis[0].nodeType);  //1 :元素节点    3：文本节点
+```
+
+
+
+![node.nodetype](I:\学习记录\胡周笔记代码练习\md文档笔记图\node.nodetype.png)
+
+##### 	3、Object.definePrototype(obj,propertyName,{})
+
+​			**给对象属性添加元属性**
+
+```js
+const person = {
+	firstName:"王",
+    lastName:"小二"
+}
+Object.defineProperty(person,"fullName",{
+  		enumberable:true,
+    	configurable:false,
+        get(){
+            return this.firstName + " " + this.lastName;
+        },
+        set(newVal){  //设置fullName的时候调用，？newVal就是易遨修改的值
+           const{firstName,lastName}=newVal.split(" ");
+            this.firstName = firstName;
+            this.lastName = lastName;
+        },    
+})
+//console.log(person)  //{firstName:"王"，lastName:"小二"，fullName:"王小二"}
+person.fullName="李 铁蛋"
+console.log(person) //{firstName:"李"，lastName:"铁蛋"，fullName:"李铁蛋"}
+```
 

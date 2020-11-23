@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+
+<body>
+
+  <div id="test">尚硅谷IT教育</div>
+
+  <div id="app">
+    <ul>
+      <li>test1</li>
+      <li>test2</li>
+      <li>test3</li>
+    </ul>
+  </div>
+
+
+
+  <!--
+1. [].slice.call(lis): 将伪数组转换为真数组
+2. node.nodeType: 得到节点类型
+3. Object.defineProperty(obj, propertyName, {}): 给对象添加属性(指定描述符)
+4. Object.keys(obj): 得到对象自身可枚举属性组成的数组
+5. obj.hasOwnProperty(prop): 判断prop是否是obj自身的属性
+6. DocumentFragment: 文档碎片(高效批量更新多个节点)
+-->
+
+  <script type="text/javascript">
+    // 1. [].slice.call(lis): 将伪数组转换为真数组
+    /* 
+      slice方法怎么知道要截取的的是哪个数组？
+      方法内部是通过this来决定哪个数组的
+      console.log([1, 2, 3].slice());
+
+      slice方法的this改成了lis
+      slice方法就会截取lis
+    */
+    const lis = document.querySelectorAll("li")
+    console.log(lis); // NodeList(3) [li, li, li] 伪数组，没有全部的数组方法 
+    const lis02 = [].slice.call(lis)
+    //变种语法：
+    console.log(Array.prototype.slice.call(lis));
+    console.log(lis02);//(3) [li, li, li] 真数组
+
+    // 2. node.nodeType: 得到节点类型
+    console.dir(lis[0].nodeType);  //1 :元素节点    3：文本节点
+
+
+    // 3. Object.defineProperty(obj, propertyName, {}): 给对象添加属性(指定描述符)
+    const person = {
+      firstName: "王",
+      lastName: "小二"
+    }
+    Object.defineProperty(person, "fullName", {
+      enumerable: true,
+      configurable: false,
+      get() {
+        return this.firstName + " " + this.lastName;
+        return this.firstName;
+      },
+      set(newVal) {  //设置fullName的时候调用，？newVal就是要修改的值
+        const [firstName, lastName] = newVal.split(" ");
+        this.firstName = firstName;
+        this.lastName = lastName;
+      },
+    })
+    console.log(person)  //{firstName:"王"，lastName:"小二"，fullName:"王小二"}
+    person.fullName = "李 铁蛋"
+    console.log(person) //{firstName:"李"，lastName:"铁蛋"，fullName:"李铁蛋"}
+    // 4. Object.keys(obj): 得到对象自身可枚举属性组成的数组
+    const obj = {
+      name: "wang",
+      age: 12,
+    }
+    obj.__proto__.sex = "男";
+    console.log(Object.keys(obj));// ["name", "age"]
+    console.log(Object.values(obj)); //["wang", 12]
+    // Object.key和Object.values不会遍历原型量上面的元素 
+    for (const keys in obj) {
+      console.log(keys); // name,age,sex   for..in遍历会遍历原型链上面的元素
+    }
+    // 5. obj.hasOwnProperty(prop): 判断prop是否是obj自身的属性
+    //hasOwnProperty() 方法会返回一个布尔值，指示对象自身属性中是否具有指定的属性（也就是，是否有指定的键）
+    //prop : 要检测的属性的 String 字符串形式表示的名称，或者 Symbol。
+    console.log(obj);
+    console.log(obj.hasOwnProperty("name")) //false
+    console.log(obj.hasOwnProperty("age")) //false
+    // 6. DocumentFragment: 文档碎片(高效批量更新多个节点)
+    //1、创建文档碎片节点
+    const fragment = document.createDocumentFragment();
+    //2、将操作的真是DOM 元素添加到文档碎片节点中
+    const app = document.getElementById("app")
+    let child;
+    while ((child = app.firstChild)) {
+      //一旦添加到文档碎片节点中，就会从真实DOM移除
+      fragment.appendChild(child)
+    }
+    console.log(fragment.childNodes);//NodeList(3) [text, ul, text]   有空格
+    console.log(fragment.childNodes[1].children);//01_prepare.html:103 HTMLCollection(3) [li, li, li]
+    //3、操作文档碎片节点
+    const list = fragment.childNodes[1].children;  //[li,li,li]
+    [].slice.call(list).forEach(li => {   //变成真实数组后遍历（真实数组才有forEach函数）
+      li.textContent += '~~~'     //给li的内容加上~~~ 
+    })
+    //4、将fragment节点添加到页面中
+    app.appendChild(fragment);
+  </script>
+</body>
+
+</html>

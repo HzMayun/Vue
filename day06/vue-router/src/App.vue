@@ -1,32 +1,44 @@
 <template>
-  <div class="container">
-    <h1>Router Page</h1>
-    <div class="row">
-      <div class="col-xs-4">
-        <ul class="nav nav-pills nav-stacked">
-          <!--
-            router-link 路由链接导航
-              切换地址
-            router-view 显示对应的路由组件
-              内部会根据当前的地址，遍历路由中routes配置，找到相应的组件显示
-           -->
-          <li><router-link to="/about">About</router-link></li>
-          <li><router-link to="/home">Home</router-link></li>
-        </ul>
-      </div>
-      <div class="col-xs-8">
-        <!-- 显示对应的路由组件 -->
-        <router-view></router-view>
-      </div>
-    </div>
+  <div class="box">
+    <p>clicked: {{ $store.state.num }} time,count is xxx</p>
+    <select v-model="val">
+      <option :value="1">1</option>
+      <option :value="2">2</option>
+      <option :value="3">3</option>
+    </select>
+    <button @click="increment">+</button>
+    <button @click="decrement">-</button>
+    <button>increment if odd</button>
+    <button>increment async</button>
   </div>
 </template>
 
 <script>
+/*
+    组件使用vuex
+    读取：this.$store.state.xxx
+    修改：this.$store.dispatch(要触发的action函数名称，传递给action的数据)
+*/
 export default {
   name: "App",
+  data() {
+    return {
+      val: 1,
+    };
+  },
+  methods: {
+    increment() {
+      this.$store.dispatch("increment", this.val);
+    },
+    decrement() {
+      this.$store.dispatch("decrement", this.val);
+    },
+  },
 };
 </script>
 
 <style>
+.box {
+  margin: 50px 50px;
+}
 </style>
